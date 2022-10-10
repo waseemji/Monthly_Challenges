@@ -2,6 +2,7 @@ from urllib import response
 from django.shortcuts import redirect, render
 from django.http import HttpResponse,HttpResponseNotAllowed, HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse
+from django.template.loader import render_to_string
 # Create your views here.
 
 challenge_text = {
@@ -15,19 +16,22 @@ challenge_text = {
     "august" : " College katham ho gaya",
     "september": "Blaank",
     "october" : "Gandhi Jayanthi",
-    "november" : "November aagaya",
-    "december" : " 2022 is over"
+    "november" : None,
+    "december" : None
 }
 
 def index(request):
-    redirect_url = ""
+    # redirect_url = ""
     months = list(challenge_text.keys())
-    for month in months:
-        capitalized_month = month.capitalize()
-        month_path = reverse("month-challenge", args=[month])
-        redirect_url += f"<li><a href = '{month_path}'>{capitalized_month}</a></li>"
-    response = f"<ul>{redirect_url}</ul>"
-    return HttpResponse(response)
+    # for month in months:
+    #     capitalized_month = month.capitalize()
+    #     month_path = reverse("month-challenge", args=[month])
+    #     redirect_url += f"<li><a href = '{month_path}'>{capitalized_month}</a></li>"
+    # response = f"<ul>{redirect_url}</ul>"
+    # return HttpResponse(response)
+    return render(request,"challenges/index.html",{
+        "months":months
+    })
 
 def monthly_number_challenge(request,month):
     months = list(challenge_text.keys())
@@ -40,8 +44,14 @@ def monthly_number_challenge(request,month):
 
 def monthly_challenge(request,month):
     try:
+
         challenge = challenge_text[month]
-        response_data = f"<h1>{challenge}</h1>"
-        return HttpResponse(response_data)
+        return render(request,"challenges/challenges.html",{
+            "text":challenge,
+            "title":month
+        })
+        # response_data = render_to_string("challenges/challenges.html")
+        # # response_data = f"<h1>{challenge}</h1>"
+        # return HttpResponse(response_data)
     except:
         return HttpResponseNotFound("<h1>Enter a valid month</h1>")
